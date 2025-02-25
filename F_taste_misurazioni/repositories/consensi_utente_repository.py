@@ -1,5 +1,4 @@
 from F_taste_misurazioni.models.consensi_utente import ConsensiUtenteModel
-from F_taste_misurazioni.models.log_consensi import LOGConsensi
 from F_taste_misurazioni.db import get_session
 from sqlalchemy.exc import SQLAlchemyError
 
