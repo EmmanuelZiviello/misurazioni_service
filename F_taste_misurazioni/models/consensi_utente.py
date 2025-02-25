@@ -1,4 +1,4 @@
-from F_taste_paziente.db import Base
+from F_taste_misurazioni.db import Base
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean
 from sqlalchemy.orm import relationship
 

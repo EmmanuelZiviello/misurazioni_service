@@ -1,7 +1,7 @@
 from F_taste_misurazioni.db import Base
 from sqlalchemy import Column, String, Date, ForeignKey, Integer, LargeBinary, Boolean
 from sqlalchemy.orm import relationship, backref
-from F_taste_paziente.models.consensi_utente import ConsensiUtenteModel
+from F_taste_misurazioni.models.consensi_utente import ConsensiUtenteModel
 
 
 class PazienteModel(Base):
