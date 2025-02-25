@@ -1,5 +1,5 @@
 from datetime import timedelta
-from F_taste_nutrizionista.utils.credentials import secret_key
+from F_taste_misurazioni.utils.credentials import secret_key
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
