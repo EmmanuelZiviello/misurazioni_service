@@ -1,0 +1,5 @@
+from F_taste_misurazioni.models.consensi_utente import ConsensiUtenteModel
+from F_taste_misurazioni.models.misurazione import MisurazioneModel
+from F_taste_misurazioni.models.misurazione_medico import MisurazioneMedicoModel
+from F_taste_misurazioni.models.nutrizionista import NutrizionistaModel
+from F_taste_misurazioni.models.paziente import PazienteModel
