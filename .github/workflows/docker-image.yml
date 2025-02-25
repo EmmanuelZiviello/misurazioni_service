@@ -1,0 +1,22 @@
+
+name: Publish image to Docker Hub
+
+on:
+  workflow_dispatch:  # Corretto l'evento trigger
+
+jobs:
+  publish_image:
+    runs-on: ubuntu-latest  # Corretto `runs_on` → `runs-on`
+
+    steps:
+      - name: Checkout repository  # Corretto `-name:` → `- name:`
+        uses: actions/checkout@v3  # Corretto `action/checkout` → `actions/checkout`
+
+      - name: Build Docker image
+        run: docker build . -t manuelziviello/misurazioni-service:latest
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login -u manuelziviello --password-stdin
+
+      - name: Push Docker image
+        run: docker push manuelziviello/misurazioni-service:latest
