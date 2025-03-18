@@ -14,8 +14,6 @@ class PazienteModel(Base):
     sesso = Column(Boolean)
     fk_nutrizionista = Column(Integer, ForeignKey('nutrizionista.id_nutrizionista', onupdate="CASCADE"), nullable=True)
     nutrizionista = relationship("NutrizionistaModel", back_populates='pazienti', lazy=True)
-    misurazioni_medico = relationship("MisurazioneMedicoModel", back_populates='paziente', lazy=True, cascade='delete')
-    misurazioni = relationship("MisurazioneModel", back_populates='paziente', lazy=True, cascade='delete')
     consensi_utente = relationship("ConsensiUtenteModel", back_populates='paziente', lazy=True, cascade='delete', uselist=False)
     
     def __init__(self, id_paziente, email, password, data_nascita=None, sesso=None, fk_nutrizionista=None):
