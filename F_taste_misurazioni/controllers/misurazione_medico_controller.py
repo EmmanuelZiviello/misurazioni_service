@@ -66,7 +66,7 @@ misurazione_medico_schema = MisurazioneMedicoSchema(only = [
     'fk_paziente'])
 
 class MisurazioneMedicoController(Resource):
-
+    #da provare
     @nutrizionista_required()
     @nutrizionista_ns.expect(post_misurazione_model)
     @nutrizionista_ns.doc('crea misurazione')
@@ -74,7 +74,7 @@ class MisurazioneMedicoController(Resource):
         parametri_misurazione = request.get_json()
         email_nutrizionista = get_jwt_identity()
         return MisurazioneMedicoService.crea_misurazione(parametri_misurazione, email_nutrizionista)
-
+    #
     @nutrizionista_required()
     @nutrizionista_ns.expect(put_misurazione_medico)
     @nutrizionista_ns.doc('modifica una misurazione')
@@ -88,7 +88,7 @@ class MisurazioneMedicoController(Resource):
 
         return MisurazioneMedicoService.update_misurazione(parametri_misurazione, email_nutrizionista)
     
-
+    #
     @nutrizionista_required()
     @nutrizionista_ns.doc('ricevi misurazione medico in una data', params={'id_paziente': 'PAZ1234', 'data_misurazione': '2022-10-11'})
     def get(self):
@@ -101,7 +101,7 @@ class MisurazioneMedicoController(Resource):
             request_args.get('data_misurazione')
             )
         
-        
+    #   
     @nutrizionista_required()
     @nutrizionista_ns.doc('misurazione da eliminare', params={'id_paziente': 'PAZ1234', 'data_misurazione': '2023-01-01T00:00:00Z'})
     def delete(self):

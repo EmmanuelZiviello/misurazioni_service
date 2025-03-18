@@ -7,7 +7,6 @@ class MisurazioneMedicoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = MisurazioneMedicoModel
         load_instance = True
-        include_fk = True
         # sqla_session = db.session
 
 

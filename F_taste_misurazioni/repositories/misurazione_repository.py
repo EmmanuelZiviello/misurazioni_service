@@ -9,7 +9,7 @@ class MisurazioneRepository:
     def find_misurazione(id_paziente, sorgente, tipo_misurazione, data, session=None):
         session=session or get_session('patient')
         return  session.query(MisurazioneModel).filter(
-            MisurazioneModel.fk_paziente == id_paziente,
+            MisurazioneModel.id_paziente == id_paziente,
             MisurazioneModel.sorgente == sorgente,
             MisurazioneModel.tipo_misurazione == tipo_misurazione,
             MisurazioneModel.data_misurazione == data
@@ -32,7 +32,7 @@ class MisurazioneRepository:
     def find_misurazione_by_tipo_end_date(id_paziente, tipo_misurazione, data, session=None):
         session=session or get_session('patient')
         return session.query(MisurazioneModel).filter(
-            MisurazioneModel.fk_paziente == id_paziente,
+            MisurazioneModel.id_paziente == id_paziente,
             MisurazioneModel.tipo_misurazione == tipo_misurazione,
             MisurazioneModel.data_misurazione == data
         ).first()
@@ -40,7 +40,7 @@ class MisurazioneRepository:
     @staticmethod
     def get_last_misurazione_of_paziente(id_paziente, session=None):
         session=session or get_session('dietitian')
-        return session.query(MisurazioneModel).filter(MisurazioneModel.fk_paziente == id_paziente).order_by(MisurazioneModel.data_misurazione.desc()).first()
+        return session.query(MisurazioneModel).filter(MisurazioneModel.id_paziente == id_paziente).order_by(MisurazioneModel.data_misurazione.desc()).first()
 
     @staticmethod
     def get_misurazione_of_paziente_in_that_day(id_paziente, data_misurazione, session=None):
@@ -48,7 +48,7 @@ class MisurazioneRepository:
         return (
             session.query(MisurazioneModel)
             .filter(
-                MisurazioneModel.fk_paziente == id_paziente,
+                MisurazioneModel.id_paziente == id_paziente,
                 MisurazioneModel.data_misurazione == data_misurazione
             )
             .first()

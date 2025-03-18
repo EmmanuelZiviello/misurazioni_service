@@ -3,6 +3,8 @@ from F_taste_misurazioni.repositories.paziente_repository import PazienteReposit
 from F_taste_misurazioni.repositories.nutrizionista_repository import NutrizionistaRepository
 from F_taste_misurazioni.schemas.misurazione_medico import MisurazioneMedicoSchema
 from F_taste_misurazioni.utils.management_utils import check_nutrizionista
+from F_taste_misurazioni.kafka.kafka_producer import send_kafka_message
+from F_taste_misurazioni.utils.kafka_helpers import wait_for_kafka_response
 from F_taste_misurazioni.repositories.misurazione_medico_repository import MisurazioneMedicoRepository
 from sqlalchemy.exc import IntegrityError
 
@@ -31,6 +33,69 @@ misurazione_medico_schema_for_dump = MisurazioneMedicoSchema(only = [
 
 class MisurazioneMedicoService:
 
+
+    @staticmethod 
+    def crea_misurazione(parametri_misurazione,email_nutrizionista):
+        validation_errors = misurazione_medico_schema.validate(parametri_misurazione)
+        if validation_errors:
+            return validation_errors, 400
+        id_paziente=parametri_misurazione["fk_paziente"]
+        message={"id_paziente":id_paziente}
+        send_kafka_message("patient.existGet.request",message)
+        response_paziente=wait_for_kafka_response(["patient.existGet.success", "patient.existGet.failed"])
+        #controlli su response_paziente
+        if response_paziente is None:
+            return {"message": "Errore nella comunicazione con Kafka"}, 500
+        
+        if response_paziente.get("status_code") == "200":
+            paziente_id_nutrizionista=response_paziente["id_nutrizionista"]
+            if paziente_id_nutrizionista:
+                #invia tramite kafka per capire se è presente il nutrizionista nel db e riceve il suo id
+                message={"email_nutrizionista":email_nutrizionista}
+                send_kafka_message("dietitian.existGet.request",message)
+                response_nutrizionista=wait_for_kafka_response(["dietitian.existGet.success", "dietitian.existGet.failed"])
+                #controlli su response_nutrizionista
+                if response_nutrizionista is None:
+                    return {"message": "Errore nella comunicazione con Kafka"}, 500
+                
+                if response_nutrizionista.get("status_code") == "200":
+                    id_nutrizionista=response_nutrizionista["id_nutrizionista"]
+
+                    if id_nutrizionista:
+                    #   
+                        if paziente_id_nutrizionista == id_nutrizionista:
+                                #####
+                                session = get_session('dietitian')
+                                
+                                misurazione = misurazione_medico_schema.load(parametri_misurazione)
+                                if MisurazioneMedicoRepository.get_misurazione_medico_of_paziente_in_that_day(id_paziente, misurazione.data_misurazione, session):
+                                    session.close()
+                                    return {'message': 'esiste già una misurazione per questa data'}, 409
+                                MisurazioneMedicoRepository.save_misurazione(misurazione, session)
+                                session.close()
+                                return {"esito richiesta":"Misurazione medico creata con successo"}, 200
+                                #######
+                        else:
+                            return {'message': 'paziente non seguito'}, 403
+                        
+                    else:
+                        return{"message":"Id nutrizionista mancante"}, 400
+                    #
+                elif response_nutrizionista.get("status_code") == "400":
+                    return {"esito crea_misurazione":"Dati mancanti"}, 400
+                elif response_nutrizionista.get("status_code") == "404":
+                    return {"esito crea_misurazione":"Nutrizionista non presente nel db"}, 404
+            
+            return{"message":"Il paziente non è seguito da un nutrizionista"}, 403
+
+            
+        elif response_paziente.get("status_code") == "400":
+            return {"esito crea_misurazione":"Dati mancanti"}, 400
+        elif response_paziente.get("status_code") == "404":
+            return {"esito crea_misurazione":"Paziente non presente nel db"}, 404
+
+
+    '''
     @staticmethod
     def crea_misurazione(parametri_misurazione, email_nutrizionista):
         session = get_session('dietitian')
@@ -62,7 +127,7 @@ class MisurazioneMedicoService:
         MisurazioneMedicoRepository.save_misurazione(misurazione, session)
         session.close()
         return {"esito richiesta":"Misurazione medico creata con successo"},200
-
+    '''
     @staticmethod
     def update_misurazione(parametri_misurazione, email_nutrizionista):
         session = get_session('dietitian')
@@ -111,6 +176,61 @@ class MisurazioneMedicoService:
         
 
     @staticmethod
+    def get_misurazione_medico(email_nutrizionista,id_paziente,data_misurazione):
+        message={"id_paziente":id_paziente}
+        send_kafka_message("patient.existGet.request",message)
+        response_paziente=wait_for_kafka_response(["patient.existGet.success", "patient.existGet.failed"])
+        #controlli su response_paziente
+        if response_paziente is None:
+            return {"message": "Errore nella comunicazione con Kafka"}, 500
+        
+        if response_paziente.get("status_code") == "200":
+            paziente_id_nutrizionista=response_paziente["id_nutrizionista"]
+            if paziente_id_nutrizionista:
+                #invia tramite kafka per capire se è presente il nutrizionista nel db e riceve il suo id
+                message={"email_nutrizionista":email_nutrizionista}
+                send_kafka_message("dietitian.existGet.request",message)
+                response_nutrizionista=wait_for_kafka_response(["dietitian.existGet.success", "dietitian.existGet.failed"])
+                #controlli su response_nutrizionista
+                if response_nutrizionista is None:
+                    return {"message": "Errore nella comunicazione con Kafka"}, 500
+                
+                if response_nutrizionista.get("status_code") == "200":
+                    id_nutrizionista=response_nutrizionista["id_nutrizionista"]
+
+                    if id_nutrizionista:
+                    #   
+                        if paziente_id_nutrizionista == id_nutrizionista:
+                                #####
+                                session = get_session('dietitian')
+                                misurazione_medico=MisurazioneMedicoRepository.get_misurazione_medico_of_paziente_in_that_day(id_paziente,data_misurazione,session)
+                                if misurazione_medico is None:
+                                    return {'message': 'misurazione medico non presente nel db'}, 404
+                                output_richiesta=misurazione_medico_schema_for_dump.dump(misurazione_medico)
+                                session.close()
+                                return output_richiesta, 200
+                                #######
+                        else:
+                            return {'message': 'paziente non seguito'}, 403
+                        
+                    else:
+                        return{"message":"Id nutrizionista mancante"}, 400
+                    #
+                elif response_nutrizionista.get("status_code") == "400":
+                    return {"esito get_misurazione":"Dati mancanti"}, 400
+                elif response_nutrizionista.get("status_code") == "404":
+                    return {"esito get_misurazione_medico":"Nutrizionista non presente nel db"}, 404
+            
+            return{"message":"Il paziente non è seguito da un nutrizionista"}, 403
+
+            
+        elif response_paziente.get("status_code") == "400":
+            return {"esito get_misurazione_medico":"Dati mancanti"}, 400
+        elif response_paziente.get("status_code") == "404":
+            return {"esito get_misurazione_medico":"Paziente non presente nel db"}, 404
+
+    '''
+    @staticmethod
     def get_misurazione_medico(email_nutrizionista, id_paziente, data_misurazione):
         session = get_session('dietitian')
         
@@ -135,7 +255,7 @@ class MisurazioneMedicoService:
         
         finally:
             session.close()
-
+    '''
 
     @staticmethod
     def delete_misurazione_medico(email_nutrizionista, id_paziente, data_misurazione):

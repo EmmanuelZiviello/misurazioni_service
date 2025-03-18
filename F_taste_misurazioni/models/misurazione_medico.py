@@ -22,8 +22,7 @@ class MisurazioneMedicoModel(Base):
     massa_magra = Column(StringEncryptedType(Integer, get_key))
     massa_grassa = Column(StringEncryptedType(Integer, get_key))
     idratazione = Column(StringEncryptedType(Integer, get_key))
-    fk_paziente = Column(String(10), ForeignKey("paziente.id_paziente", onupdate="CASCADE", ondelete="CASCADE"), nullable=False) 
-    paziente = relationship("PazienteModel", back_populates='misurazioni_medico', lazy=True, passive_deletes=True)
+    fk_paziente = Column(String(7), nullable=False)  # Eliminata la ForeignKey
     __table_args__ = (UniqueConstraint(data_misurazione, fk_paziente, name="one_measurements_for_day"),)
 
     def __init__(self, peso, altezza, vita, fianchi, bmi, trigliceridi, colesterolo_DHL, glucosio,
