@@ -75,7 +75,7 @@ class MisurazioneMedicoController(Resource):
         email_nutrizionista = get_jwt_identity()
         return MisurazioneMedicoService.crea_misurazione(parametri_misurazione, email_nutrizionista)
     
-    #da provare
+    #da provare, mi da errore che il paziente non è seguito dal nutrizionista wtf
     @nutrizionista_required()
     @nutrizionista_ns.expect(put_misurazione_medico)
     @nutrizionista_ns.doc('modifica una misurazione')
@@ -100,7 +100,7 @@ class MisurazioneMedicoController(Resource):
             request_args.get('data_misurazione')
             )
         
-    #da provare
+    
     @nutrizionista_required()
     @nutrizionista_ns.doc('misurazione da eliminare', params={'id_paziente': 'PAZ1234', 'data_misurazione': '2023-01-01T00:00:00Z'})
     def delete(self):
@@ -114,7 +114,7 @@ class MisurazioneMedicoController(Resource):
         )
 
 class MisurazioniMedicoController(Resource):
-    #da provare
+    
     @nutrizionista_required()
     @nutrizionista_ns.doc('ricevi tutte le misurazioni di un paziente', params={'id_paziente': 'PAZ1234'})
     def get(self):
