@@ -14,7 +14,6 @@ class MisurazioneModel(Base):
     sorgente = Column(StringEncryptedType(String, get_key))
     id_paziente = Column(String(7), nullable=False)  # Eliminata la ForeignKey
     data_misurazione = Column(TIMESTAMP)
-    paziente = relationship("PazienteModel", back_populates='misurazioni', lazy=True)
     __table_args__ = (UniqueConstraint(data_misurazione, id_paziente, tipo_misurazione, sorgente, name="one_type_of_for_that_time"),)
 
     def __init__(self, valore, data_misurazione, tipo_misurazione, sorgente):
