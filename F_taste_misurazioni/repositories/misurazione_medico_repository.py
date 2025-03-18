@@ -41,10 +41,8 @@ class MisurazioneMedicoRepository:
                 for key,value in updated_data.items():
                     setattr(misurazione_medico,key,value)
             session.commit() 
-            return misurazione_medico
         except SQLAlchemyError:
             session.rollback()
-            return None
     
 
     @staticmethod
@@ -54,6 +52,7 @@ class MisurazioneMedicoRepository:
         session.commit()
 
     @staticmethod
-    def get_misurazioni_medico_of_paziente(paziente,session=None):
+    def get_misurazioni_medico_of_paziente(id_paziente,session=None):
         session=session or get_session('dietitian')
-        return paziente.misurazioni_medico if paziente else None
+        # Eseguiamo una query per ottenere tutte le misurazioni medico associate a un paziente con id_paziente
+        return session.query(MisurazioneMedicoModel).filter(MisurazioneMedicoModel.fk_paziente == id_paziente).all()
