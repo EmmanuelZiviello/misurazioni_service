@@ -166,6 +166,14 @@ class MisurazioneMedicoService:
                                 if misurazione_medico is None:
                                     session.close()
                                     return {'message': 'misurazioneMedico non presente nel db'}, 404
+                                try:
+                                    MisurazioneMedicoRepository.update_misurazione(misurazione_medico,parametri_misurazione ,session)
+                                    session.close()
+                                    return {"message":"misurazione medico aggiornata con successo"}, 200
+                                except IntegrityError:
+                                    session.rollback()
+                                    session.close()
+                                    return {'message': 'esiste già una misurazione per questa data'}, 409
                                 
                                 #######
                         else:

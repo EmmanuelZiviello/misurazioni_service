@@ -82,9 +82,6 @@ class MisurazioneMedicoController(Resource):
     def put(self):
         parametri_misurazione = request.get_json()
         email_nutrizionista = get_jwt_identity()
-
-        
-
         return MisurazioneMedicoService.update_misurazione(parametri_misurazione, email_nutrizionista)
     
     
