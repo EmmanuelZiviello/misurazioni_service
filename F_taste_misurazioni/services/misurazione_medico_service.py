@@ -159,7 +159,7 @@ class MisurazioneMedicoService:
                                 #####
                                 session = get_session('dietitian')
                                  # Recupero misurazione
-                                old_data_misurazione = parametri_misurazione['data_misurazione']
+                                old_data_misurazione = parametri_misurazione['old_data_misurazione']
                                 misurazione_medico = MisurazioneMedicoRepository.get_misurazione_medico_of_paziente_in_that_day(
                                     id_paziente, old_data_misurazione, session
                                 )
