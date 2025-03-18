@@ -83,9 +83,7 @@ class MisurazioneMedicoController(Resource):
         parametri_misurazione = request.get_json()
         email_nutrizionista = get_jwt_identity()
 
-        validation_errors = misurazione_medico_schema.validate(parametri_misurazione)
-        if validation_errors:
-            return validation_errors, 400
+        
 
         return MisurazioneMedicoService.update_misurazione(parametri_misurazione, email_nutrizionista)
     
