@@ -59,7 +59,7 @@ class MisurazionePazienteController(Resource):
         id_paziente = get_jwt_identity()
         return MisurazioneService.delete_misurazione(parametri_misurazione,id_paziente)
     
-    #da provare
+    
     @paziente_required()
     @paziente_ns.expect(misurazione_put)
     @paziente_ns.doc('aggiorna misurazione paziente')

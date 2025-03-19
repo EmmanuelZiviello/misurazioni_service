@@ -354,7 +354,7 @@ class MisurazioneService:
         elif response_paziente.get("status_code") == "404":
             return {"esito get_misurazioni_paziente":"Paziente non presente nel db"}, 404
         
-
+    '''
     @staticmethod
     def get_misurazioni_paziente(id_paziente, request_args):
         # Validazione dati
@@ -392,3 +392,4 @@ class MisurazioneService:
         
         session.close()
         return [], 200
+    '''
