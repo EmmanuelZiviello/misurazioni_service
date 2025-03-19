@@ -104,7 +104,8 @@ class MisurazioneService:
                 MisurazioneRepository.save_misurazione(misurazione, session)
                 session.close()
                 return {'message': 'misurazione salvata con successo'}, 201
-            except Exception:
+            except Exception as e:
+                print(f"Errore durante caricamento e creazione misurazione: {e}")
                 session.rollback()
                 session.close()
                 return {'message': 'errore durante la creazione della misurazione'}, 409

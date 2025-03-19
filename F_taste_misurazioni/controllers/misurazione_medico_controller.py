@@ -124,7 +124,7 @@ class MisurazioniMedicoController(Resource):
         )
 
 class MisurazioniMedicoPazienteController(Resource):
-    #da provare
+    
     @paziente_required()
     @paziente_ns.doc('richiedi l\'ultima misurazione effettuata dal medico')
     def get(self):
