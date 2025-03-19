@@ -42,7 +42,7 @@ class MisurazioniController(Resource):
         return MisurazioneService.get_misurazioni(email_nutrizionista, request_args)
 
 class MisurazionePazienteController(Resource):
-    #da provare
+    
     @paziente_required()
     @paziente_ns.expect(misurazione)
     @paziente_ns.doc('post misurazione paziente')
@@ -51,7 +51,7 @@ class MisurazionePazienteController(Resource):
         id_paziente = get_jwt_identity()
         return MisurazioneService.save_misurazione(misurazione_data,id_paziente)
     
-    #da provare
+
     @paziente_required()
     @paziente_ns.doc('elimina misurazione paziente', params={'tipo_misurazione': 'glucosio', 'data_misurazione': '2023-01-01T00:00:00Z'})
     def delete(self):
