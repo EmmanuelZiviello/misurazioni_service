@@ -97,10 +97,11 @@ class MisurazioneService:
                 return {'message': 'misurazione già presente nel db'}, 409
             try:
                 ## Non sicuro su queste due righe di codice,provare
-                misurazione_schema_for_load = MisurazioneSchema(exclude = ['id_misurazione'])
-                misurazione_data['fk_paziente']=id_paziente
+                #misurazione_schema_for_load = MisurazioneSchema(exclude = ['id_misurazione'])
+                #misurazione_data['fk_paziente']=id_paziente
                 ## Non sicuro su queste due righe di codice, provare
-                misurazione = misurazione_schema_for_load.load(misurazione_data)
+                misurazione = misurazione_schema.load(misurazione_data)
+                misurazione.fk_paziente=id_paziente
                 MisurazioneRepository.save_misurazione(misurazione, session)
                 session.close()
                 return {'message': 'misurazione salvata con successo'}, 201
