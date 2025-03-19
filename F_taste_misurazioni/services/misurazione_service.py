@@ -256,7 +256,6 @@ class MisurazioneService:
                 return {'message': 'misurazione non presente nel db'}, 404
             try:
                 updated_misurazione = misurazione_schema.load(s_misurazione)
-                updated_misurazione.fk_paziente=id_paziente
                 #misurazione_schema_for_load = MisurazioneSchema(exclude = ['id_misurazione'])    
                 #updated_misurazione = misurazione_schema_for_load.load(s_misurazione)
                 MisurazioneRepository.aggiorna_misurazione(misurazione_to_change, updated_misurazione, session)
