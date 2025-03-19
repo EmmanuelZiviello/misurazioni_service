@@ -12,9 +12,9 @@ class MisurazioneModel(Base):
     valore = Column(StringEncryptedType(Float, get_key))
     tipo_misurazione = Column(StringEncryptedType(String, get_key))
     sorgente = Column(StringEncryptedType(String, get_key))
-    id_paziente = Column(String(7), nullable=False)  # Eliminata la ForeignKey
+    fk_paziente = Column(String(7), nullable=False)  # Eliminata la ForeignKey
     data_misurazione = Column(TIMESTAMP)
-    __table_args__ = (UniqueConstraint(data_misurazione, id_paziente, tipo_misurazione, sorgente, name="one_type_of_for_that_time"),)
+    __table_args__ = (UniqueConstraint(data_misurazione, fk_paziente, tipo_misurazione, sorgente, name="one_type_of_for_that_time"),)
 
     def __init__(self, valore, data_misurazione, tipo_misurazione, sorgente):
         self.valore = valore

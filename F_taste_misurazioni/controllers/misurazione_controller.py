@@ -25,7 +25,7 @@ misurazione_put = paziente_ns.model('misurazione put model', {
 
 class MisurazioniController(Resource):
 
-
+    #da fare dopo la gestione di consensi utente in servizio separato
     @nutrizionista_required()
     @nutrizionista_ns.doc('ricevi misurazioni di un tipo scelto per un determinato periodo, il campo unit è opzionale', 
     params={
@@ -42,27 +42,34 @@ class MisurazioniController(Resource):
         return MisurazioneService.get_misurazioni(email_nutrizionista, request_args)
 
 class MisurazionePazienteController(Resource):
+    #da provare
     @paziente_required()
     @paziente_ns.expect(misurazione)
     @paziente_ns.doc('post misurazione paziente')
     def post(self):
         misurazione_data = request.get_json()
-        return MisurazioneService.save_misurazione(misurazione_data)
+        id_paziente = get_jwt_identity()
+        return MisurazioneService.save_misurazione(misurazione_data,id_paziente)
     
+    #da provare
     @paziente_required()
     @paziente_ns.doc('elimina misurazione paziente', params={'tipo_misurazione': 'glucosio', 'data_misurazione': '2023-01-01T00:00:00Z'})
     def delete(self):
         parametri_misurazione = request.args
-        return MisurazioneService.delete_misurazione(parametri_misurazione)
+        id_paziente = get_jwt_identity()
+        return MisurazioneService.delete_misurazione(parametri_misurazione,id_paziente)
     
+    #da provare
     @paziente_required()
     @paziente_ns.expect(misurazione_put)
     @paziente_ns.doc('aggiorna misurazione paziente')
     def put(self):
         misurazione_s = request.get_json()
-        return MisurazioneService.update_misurazione(misurazione_s)
+        id_paziente = get_jwt_identity()
+        return MisurazioneService.update_misurazione(misurazione_s,id_paziente)
     
 class MisurazioniPazienteController(Resource):
+    #da provare
     @paziente_required()
     @paziente_ns.doc('ricevi misurazioni di un tipo scelto per un determinato periodo',
                      params={'tipo_misurazione': 'BMI', 'inizio_periodo': '2021-05-15', 'fine_periodo': '2021-05-30'})

@@ -75,7 +75,7 @@ class MisurazioneMedicoController(Resource):
         email_nutrizionista = get_jwt_identity()
         return MisurazioneMedicoService.crea_misurazione(parametri_misurazione, email_nutrizionista)
     
-    #da provare, mi da errore che il paziente non è seguito dal nutrizionista wtf
+    
     @nutrizionista_required()
     @nutrizionista_ns.expect(put_misurazione_medico)
     @nutrizionista_ns.doc('modifica una misurazione')
