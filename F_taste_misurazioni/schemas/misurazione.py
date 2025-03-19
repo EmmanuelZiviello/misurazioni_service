@@ -11,6 +11,7 @@ class MisurazioneSchema(ma.SQLAlchemyAutoSchema):
         # sqla_session = db.session
 
     valore = fields.Float(required=True)
+    fk_paziente = fields.String(required=True)
     @post_load
     def lower_case(self, data, **kwargs):
         data['tipo_misurazione'] = data['tipo_misurazione'].lower()
