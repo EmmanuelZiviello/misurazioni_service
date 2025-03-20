@@ -39,6 +39,9 @@ class MisurazioniController(Resource):
     def get(self):
         email_nutrizionista = get_jwt_identity()
         request_args = request.args
+        validation_errors = MisurazioniParamsSchema().validate(request_args)
+        if validation_errors:
+            return validation_errors, 400
         return MisurazioneService.get_misurazioni(email_nutrizionista, request_args)
 
 class MisurazionePazienteController(Resource):
@@ -69,7 +72,7 @@ class MisurazionePazienteController(Resource):
         return MisurazioneService.update_misurazione(misurazione_s,id_paziente)
     
 class MisurazioniPazienteController(Resource):
-    #da provare
+    
     @paziente_required()
     @paziente_ns.doc('ricevi misurazioni di un tipo scelto per un determinato periodo',
                      params={'tipo_misurazione': 'BMI', 'inizio_periodo': '2021-05-15', 'fine_periodo': '2021-05-30'})

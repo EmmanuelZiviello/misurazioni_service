@@ -20,11 +20,93 @@ from flask_restx import reqparse
 
 
 class MisurazioneService:
+
+    @staticmethod
+    def get_misurazioni(email_nutrizionista,request_args):
+        id_paziente=request_args["id_paziente"]
+        message={"id_paziente":id_paziente}
+        send_kafka_message("patient.existGet.request",message)
+        response_paziente=wait_for_kafka_response(["patient.existGet.success", "patient.existGet.failed"])
+        #controlli su response_paziente
+        if response_paziente is None:
+            return {"message": "Errore nella comunicazione con Kafka"}, 500
+        
+        if response_paziente.get("status_code") == "200":
+            paziente_id_nutrizionista=response_paziente["id_nutrizionista"]
+            if paziente_id_nutrizionista:
+                #invia tramite kafka per capire se è presente il nutrizionista nel db e riceve il suo id
+                message={"email_nutrizionista":email_nutrizionista}
+                send_kafka_message("dietitian.existGet.request",message)
+                response_nutrizionista=wait_for_kafka_response(["dietitian.existGet.success", "dietitian.existGet.failed"])
+                #controlli su response_nutrizionista
+                if response_nutrizionista is None:
+                    return {"message": "Errore nella comunicazione con Kafka"}, 500
+                
+                if response_nutrizionista.get("status_code") == "200":
+                    id_nutrizionista=response_nutrizionista["id_nutrizionista"]
+
+                    if id_nutrizionista:
+                    #   
+                        if paziente_id_nutrizionista == id_nutrizionista:
+                                #####
+                                session = get_session('dietitian')
+                                try:
+                                    data_inizio = datetime.datetime.fromisoformat(request_args['inizio_periodo'])
+                                    data_fine = datetime.datetime.fromisoformat(request_args['fine_periodo'])
+                                except ValueError:
+                                    session.close()
+                                    return {'message': 'not a valid datetime'}, 400
+                                message={"id_paziente":id_paziente}
+                                send_kafka_message("consensi.getCondivisione.request",message)
+                                response=wait_for_kafka_response(["consensi.getCondivisione.success", "consensi.getCondivisione.failed"])
+                                if response is None:
+                                    session.close()
+                                    return {"message": "Errore nella comunicazione con Kafka"}, 500
+                                
+                                if response.get("status_code") == "200":
+                                    condivisione_misurazioni_paziente=response.get("condivisione_misurazioni_paziente")
+                                    if not condivisione_misurazioni_paziente:
+                                        session.close()
+                                        return {'message': 'il paziente non ha accettato di condividere le misurazioni'}, 403
+                                    misurazioni = MisurazioneRepository.find_by_paziente_and_period(
+            id_paziente, request_args['tipo_misurazione'], data_inizio, data_fine, session)
+                                    if misurazioni:
+                                        if request_args.get('unit') == 'giorno':
+                                            output_richiesta= MisurazioniAggregatedSchema().dump({'misurazioni': misurazioni}), 200
+                                            session.close()
+                                            return output_richiesta
+                                        output_richiesta= misurazioni_schema.dump(misurazioni), 200
+                                        session.close()
+                                        return output_richiesta
+                                    session.close()
+                                    return [], 200
+                                elif response.get("status_code") == "400":
+                                    session.close()
+                                    return {"message":"dati mancanti per il recupero consensi utente"}, 400
+                                elif response.get("status_code") == "404":
+                                    return {"message":"consensi non presenti nel db"}, 404
+                                #######
+                        else:
+                            return {'message': 'paziente non seguito'}, 403
+                        
+                    else:
+                        return{"message":"Id nutrizionista mancante"}, 400
+                    #
+                elif response_nutrizionista.get("status_code") == "400":
+                    return {"esito get_misurazioni":"Dati mancanti"}, 400
+                elif response_nutrizionista.get("status_code") == "404":
+                    return {"esito get_misurazioni":"Nutrizionista non presente nel db"}, 404
+            
+            return{"message":"Il paziente non è seguito da un nutrizionista"}, 403
+
+            
+        elif response_paziente.get("status_code") == "400":
+            return {"esito get_misurazioni":"Dati mancanti"}, 400
+        elif response_paziente.get("status_code") == "404":
+            return {"esito get_misurazioni":"Paziente non presente nel db"}, 404
+
     @staticmethod
     def get_misurazioni(email_nutrizionista, request_args):
-        validation_errors = MisurazioniParamsSchema().validate(request_args)
-        if validation_errors:
-            return validation_errors, 400
 
         session = get_session('dietitian')
         id_paziente = request_args['id_paziente']

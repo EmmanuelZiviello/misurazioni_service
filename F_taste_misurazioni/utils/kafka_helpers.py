@@ -15,6 +15,8 @@ consumer_response = KafkaConsumer(
     'patient.existGet.failed',
     'dietitian.existGet.success',
     'dietitian.existGet.failed',
+    'consensi.getCondivisione.success',
+    'consensi.getCondivisione.failed',
     bootstrap_servers=KAFKA_BROKER_URL,
     client_id="misurazioni_consumer",
     group_id="misurazioni_service_response",
