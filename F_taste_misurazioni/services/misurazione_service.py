@@ -105,6 +105,8 @@ class MisurazioneService:
         elif response_paziente.get("status_code") == "404":
             return {"esito get_misurazioni":"Paziente non presente nel db"}, 404
 
+
+    '''
     @staticmethod
     def get_misurazioni(email_nutrizionista, request_args):
 
@@ -152,6 +154,7 @@ class MisurazioneService:
             return output_richiesta
         session.close()
         return [], 200
+        '''
     
     @staticmethod
     def save_misurazione(misurazione_data,id_paziente):
