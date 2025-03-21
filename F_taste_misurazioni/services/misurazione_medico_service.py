@@ -489,7 +489,9 @@ class MisurazioneMedicoService:
         session=get_session('dietitian')
         misurazione_medico=MisurazioneMedicoRepository.get_last_misurazione_medico_of_paziente(id_paziente,session)
         if misurazione_medico is  None:
+            session.close()
             return{"status_code":"404"}, 404
+        session.close()
         return {"status_code":"200", "peso":misurazione_medico.peso,"altezza":misurazione_medico.altezza,"menopausa":misurazione_medico.menopausa}, 200
     
 
