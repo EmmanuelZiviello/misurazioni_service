@@ -35,7 +35,7 @@ def consume(app):
             topic=message.topic
             if topic ==  "misurazioni.getLastMedico.request":
                 response, status = MisurazioneMedicoService.get_last(data)  # Chiama il Service
-                topic_producer = "misurazioni.getLastMedico" if status == 200 else "misurazioni.getLastMedico.failed"
+                topic_producer = "misurazioni.getLastMedico.success" if status == 200 else "misurazioni.getLastMedico.failed"
                 send_kafka_message(topic_producer, response)
            
             
