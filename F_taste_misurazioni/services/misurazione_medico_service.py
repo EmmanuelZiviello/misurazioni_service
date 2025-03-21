@@ -480,6 +480,18 @@ class MisurazioneMedicoService:
         finally:
             session.close()
             '''
+    
+    @staticmethod
+    def get_last(s_misurazione):
+        if "id_paziente" not in s_misurazione:
+            return {"status_code":"400"}, 400
+        id_paziente=s_misurazione["id_paziente"]
+        session=get_session('dietitian')
+        misurazione_medico=MisurazioneMedicoRepository.get_last_misurazione_medico_of_paziente(id_paziente,session)
+        if misurazione_medico is  None:
+            return{"status_code":"404"}, 404
+        return {"status_code":"200", "peso":misurazione_medico.peso,"altezza":misurazione_medico.altezza,"menopausa":misurazione_medico.menopausa}, 200
+    
 
     @staticmethod
     def get_last_misurazione_medico(id_paziente):

@@ -25,7 +25,7 @@ misurazione_put = paziente_ns.model('misurazione put model', {
 
 class MisurazioniController(Resource):
 
-    #da fare dopo la gestione di consensi utente in servizio separato
+    
     @nutrizionista_required()
     @nutrizionista_ns.doc('ricevi misurazioni di un tipo scelto per un determinato periodo, il campo unit è opzionale', 
     params={

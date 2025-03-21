@@ -1,4 +1,5 @@
 import os
+import threading
 from flask import Flask, request
 from flask_jwt_extended import JWTManager
 from flask_restx import Api, ValidationError as ValidationErr
@@ -7,6 +8,7 @@ from sqlalchemy.exc import NoResultFound
 from smtplib import SMTPException
 from flask_cors import CORS
 from F_taste_misurazioni.db import set_DB_CONFIG,create_db
+from F_taste_misurazioni.kafka.kafka_consumer import consume
 
 from F_taste_misurazioni.ma import ma
 
@@ -24,6 +26,9 @@ from F_taste_misurazioni.utils.jwt_custom_decorators import NoAuthorizationExcep
 
 from logging import getLogger
 
+def start_kafka_consumer(app):
+    thread = threading.Thread(target=consume,args=(app,) ,daemon=True)
+    thread.start()
 
 def create_app():
     # create and configure the app
@@ -145,5 +150,8 @@ def create_app():
     @app.route('/health', methods=['GET'])#è solo per prova
     def health_check():
         return {'message': 'API misurazioni è online'}, 200
+    
+    # Avvia il Consumer Kafka all'avvio del servizio paziente
+    start_kafka_consumer(app)
     
     return app
