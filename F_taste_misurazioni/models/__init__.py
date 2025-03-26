@@ -1,0 +1,2 @@
+from F_taste_misurazioni.models.misurazione import MisurazioneModel
+from F_taste_misurazioni.models.misurazione_medico import MisurazioneMedicoModel
