@@ -6,13 +6,8 @@ from flask_restx import Resource
 from F_taste_misurazioni.db import get_session
 
 from F_taste_misurazioni.schemas.misurazione import MisurazioneSchema
-from F_taste_misurazioni.repositories.consensi_utente_repository import ConsensiUtenteRepository
 from F_taste_misurazioni.repositories.misurazione_repository import MisurazioneRepository
-from F_taste_misurazioni.repositories.nutrizionista_repository import NutrizionistaRepository
-from F_taste_misurazioni.repositories.paziente_repository import PazienteRepository
-from F_taste_misurazioni.namespaces import nutrizionista_ns
 from F_taste_misurazioni.schemas.misurazione import misurazioni_schema, misurazione_schema,MisurazioniAggregatedSchema, MisurazioniParamsSchema
-from F_taste_misurazioni.utils.management_utils import check_nutrizionista
 from F_taste_misurazioni.kafka.kafka_producer import send_kafka_message
 from F_taste_misurazioni.utils.kafka_helpers import wait_for_kafka_response
 from flask_restx import reqparse
